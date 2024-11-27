@@ -1,10 +1,4 @@
-import 'dart:convert';
-
-Map<String, Product> productFromJson(String str) => Map.from(json.decode(str))
-    .map((k, v) => MapEntry<String, Product>(k, Product.fromJson(v)));
-
-String productToJson(Map<String, Product> data) => json.encode(
-    Map.from(data).map((k, v) => MapEntry<String, dynamic>(k, v.toJson())));
+import 'package:flutter/material.dart';
 
 class Product {
   bool disponible;
@@ -12,6 +6,9 @@ class Product {
   String nombre;
   double precio;
   String? id;
+  int? cantidad;
+  String? talla;
+  Color? color;
 
   Product({
     required this.disponible,
@@ -19,6 +16,9 @@ class Product {
     required this.nombre,
     required this.precio,
     this.id,
+    this.cantidad,
+    this.talla,
+    this.color,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -26,6 +26,10 @@ class Product {
         imagen: json["imagen"],
         nombre: json["nombre"],
         precio: json["precio"]?.toDouble(),
+        id: json["id"],
+        cantidad: json["cantidad"],
+        talla: json["talla"],
+        color: json["color"] != null ? Color(int.parse(json["color"])) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -33,13 +37,31 @@ class Product {
         "imagen": imagen,
         "nombre": nombre,
         "precio": precio,
+        "id": id,
+        "cantidad": cantidad,
+        "talla": talla,
+        "color": color != null ? color!.value.toString() : null,
       };
 
-  Product copy() => Product(
-        disponible: disponible,
-        imagen: imagen,
-        nombre: nombre,
-        precio: precio,
-        id: id,
-      );
+  Product copyWith({
+    bool? disponible,
+    String? imagen,
+    String? nombre,
+    double? precio,
+    String? id,
+    int? cantidad,
+    String? talla,
+    Color? color,
+  }) {
+    return Product(
+      disponible: disponible ?? this.disponible,
+      imagen: imagen ?? this.imagen,
+      nombre: nombre ?? this.nombre,
+      precio: precio ?? this.precio,
+      id: id ?? this.id,
+      cantidad: cantidad ?? this.cantidad,
+      talla: talla ?? this.talla,
+      color: color ?? this.color,
+    );
+  }
 }

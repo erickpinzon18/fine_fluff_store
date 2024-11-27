@@ -167,7 +167,15 @@ class _SeleccionarProductoPageState extends State<SeleccionarProductoPage> {
 
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, 'carritoCompras');
+                          if (product != null) {
+                            final configuredProduct = product.copyWith(
+                              color: colorSeleccionado,
+                              talla: tallaSeleccionada,
+                              cantidad: cantidad,
+                            );
+                            productoService.agregarAlCarrito(configuredProduct);
+                            Navigator.pushNamed(context, 'carritoCompras');
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.indigo,

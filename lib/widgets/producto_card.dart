@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:products/models/product.dart';
+import 'package:provider/provider.dart';
+import 'package:products/services/producto_service.dart';
 
 class ProductoCard extends StatelessWidget {
   final Product product;
@@ -8,8 +10,12 @@ class ProductoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final productoService =
+        Provider.of<ProductoService>(context, listen: false);
+
     return GestureDetector(
       onTap: () {
+        productoService.productoSeleccionado = product;
         Navigator.pushNamed(
           context,
           'producto',

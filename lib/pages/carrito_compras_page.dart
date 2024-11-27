@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:products/services/producto_service.dart';
+import 'package:provider/provider.dart';
 
 class CarritoComprasPage extends StatefulWidget {
   const CarritoComprasPage({super.key});
@@ -8,45 +10,41 @@ class CarritoComprasPage extends StatefulWidget {
 }
 
 class _CarritoComprasPageState extends State<CarritoComprasPage> {
-  final List<Map<String, dynamic>> productos = [
-    {
-      'nombre': 'Camiseta Negra',
-      'precio': 250,
-      'color': Colors.black,
-      'talla': 'CH',
-      'cantidad': 2,
-    },
-    {
-      'nombre': 'Camiseta Blanca',
-      'precio': 250,
-      'color': Colors.white,
-      'talla': 'MD',
-      'cantidad': 1,
-    },
-  ];
-
   void _incrementQuantity(int index) {
     setState(() {
-      productos[index]['cantidad']++;
+      final productoService =
+          Provider.of<ProductoService>(context, listen: false);
+      productoService.carrito[index] = productoService.carrito[index].copyWith(
+        cantidad: (productoService.carrito[index].cantidad ?? 1) + 1,
+      );
     });
   }
 
   void _decrementQuantity(int index) {
     setState(() {
-      if (productos[index]['cantidad'] > 1) {
-        productos[index]['cantidad']--;
+      final productoService =
+          Provider.of<ProductoService>(context, listen: false);
+      if ((productoService.carrito[index].cantidad ?? 1) > 1) {
+        productoService.carrito[index] =
+            productoService.carrito[index].copyWith(
+          cantidad: (productoService.carrito[index].cantidad ?? 1) - 1,
+        );
       }
     });
   }
 
   void _removeProduct(int index) {
     setState(() {
-      productos.removeAt(index);
+      final productoService =
+          Provider.of<ProductoService>(context, listen: false);
+      productoService.carrito.removeAt(index);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final productoService = Provider.of<ProductoService>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Carrito de Compras'),
@@ -65,9 +63,9 @@ class _CarritoComprasPageState extends State<CarritoComprasPage> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: productos.length,
+                    itemCount: productoService.carrito.length,
                     itemBuilder: (context, index) {
-                      final producto = productos[index];
+                      final producto = productoService.carrito[index];
                       return Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -81,7 +79,7 @@ class _CarritoComprasPageState extends State<CarritoComprasPage> {
                             children: [
                               // Nombre del producto
                               Text(
-                                producto['nombre'] as String,
+                                producto.nombre,
                                 style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold),
                               ),
@@ -89,7 +87,7 @@ class _CarritoComprasPageState extends State<CarritoComprasPage> {
 
                               // Precio
                               Text(
-                                '\$${producto['precio']}',
+                                '\$${producto.precio}',
                                 style: const TextStyle(
                                     fontSize: 18, color: Colors.green),
                               ),
@@ -103,11 +101,11 @@ class _CarritoComprasPageState extends State<CarritoComprasPage> {
                                     height: 20,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: producto['color'] as Color,
+                                      color: producto.color ?? Colors.black,
                                     ),
                                   ),
                                   const SizedBox(width: 10),
-                                  Text('Talla: ${producto['talla']}'),
+                                  Text('Talla: ${producto.talla ?? 'N/A'}'),
                                 ],
                               ),
                               const SizedBox(height: 10),
@@ -116,7 +114,7 @@ class _CarritoComprasPageState extends State<CarritoComprasPage> {
                               Row(
                                 children: [
                                   const Text('Cantidad: '),
-                                  Text('${producto['cantidad']}'),
+                                  Text('${producto.cantidad ?? 1}'),
                                   IconButton(
                                     icon: const Icon(Icons.add),
                                     onPressed: () => _incrementQuantity(index),

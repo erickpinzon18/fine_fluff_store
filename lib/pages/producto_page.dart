@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:products/services/producto_service.dart';
+import 'package:products/models/product.dart'; // Adjust the import path as necessary
 import 'package:products/widgets/producto_imagen.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +10,19 @@ class ProductoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productoService = Provider.of<ProductoService>(context);
+    final product = productoService.productoSeleccionado;
+
+    if (product == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Producto no encontrado'),
+        ),
+        body: const Center(
+          child: Text('Producto no encontrado'),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccionar Producto'),
@@ -23,11 +37,11 @@ class ProductoPage extends StatelessWidget {
                 Stack(
                   children: [
                     ProductoImagen(
-                      url: productoService.productoSeleccionado?.imagen,
+                      url: product.imagen,
                     ),
                   ],
                 ),
-                const _ProductoInfo(),
+                _ProductoInfo(product: product),
                 const SizedBox(height: 100),
               ],
             ),
@@ -49,7 +63,9 @@ class ProductoPage extends StatelessWidget {
 }
 
 class _ProductoInfo extends StatelessWidget {
-  const _ProductoInfo();
+  final Product product;
+
+  const _ProductoInfo({required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -75,19 +91,19 @@ class _ProductoInfo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Nombre de la playera
-            _buildSectionTitle('Nombre de la playera:'),
-            const Text(
-              'Porsche GT3',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // Nombre del producto
+            _buildSectionTitle('Nombre del producto:'),
+            Text(
+              product.nombre,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
             // Precio
             _buildSectionTitle('Precio:'),
-            const Text(
-              '\$250',
-              style: TextStyle(fontSize: 16, color: Colors.green),
+            Text(
+              '\$${product.precio}',
+              style: const TextStyle(fontSize: 16, color: Colors.green),
             ),
             const SizedBox(height: 10),
 
@@ -106,9 +122,11 @@ class _ProductoInfo extends StatelessWidget {
 
             // Estado de disponibilidad
             _buildSectionTitle('Estado:'),
-            const Text(
-              'Disponible',
-              style: TextStyle(fontSize: 16, color: Colors.green),
+            Text(
+              product.disponible ? 'Disponible' : 'No disponible',
+              style: TextStyle(
+                  fontSize: 16,
+                  color: product.disponible ? Colors.green : Colors.red),
             ),
             const SizedBox(height: 15),
           ],
