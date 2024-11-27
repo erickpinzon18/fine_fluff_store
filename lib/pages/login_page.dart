@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:products/providers/login_form_provider.dart';
+import 'package:products/services/producto_service.dart';
 import 'package:products/widgets/bg_login.dart';
 import 'package:products/widgets/card_container.dart';
 import 'package:provider/provider.dart';
@@ -62,6 +63,8 @@ class _LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loginForm = Provider.of<LoginFormProvider>(context);
+    final productoService =
+        Provider.of<ProductoService>(context, listen: false);
 
     return Form(
       key: loginForm.formKey,
@@ -110,9 +113,23 @@ class _LoginForm extends StatelessWidget {
                     FocusScope.of(context).unfocus();
                     if (!loginForm.isValidForm()) return;
                     loginForm.isLoading = true;
-                    await Future.delayed(const Duration(seconds: 2));
+
+                    final loginSuccess = await productoService.login(
+                      loginForm.email,
+                      loginForm.password,
+                    );
+
                     loginForm.isLoading = false;
-                    Navigator.pushReplacementNamed(context, 'home');
+
+                    if (loginSuccess) {
+                      Navigator.pushReplacementNamed(context, 'home');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Correo o contraseña incorrectos'),
+                        ),
+                      );
+                    }
                   },
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),

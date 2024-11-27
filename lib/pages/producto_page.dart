@@ -48,16 +48,19 @@ class ProductoPage extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Lógica para agregar al carrito
-          Navigator.pushNamed(
-            context,
-            'congirurarProducto',
-          );
-        },
-        child: const Icon(Icons.shopping_cart),
-      ),
+      floatingActionButton: product.disponible
+          ? FloatingActionButton(
+              onPressed: () {
+                // Lógica para agregar al carrito
+                Navigator.pushNamed(
+                  context,
+                  'congirurarProducto',
+                );
+              },
+              backgroundColor: Colors.indigo,
+              child: const Icon(Icons.shopping_cart, color: Colors.white),
+            )
+          : null,
     );
   }
 }

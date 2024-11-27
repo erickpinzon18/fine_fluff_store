@@ -11,6 +11,7 @@ class PagoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final productoService =
         Provider.of<ProductoService>(context, listen: false);
+    final perfilUsuario = productoService.perfilUsuario;
 
     // Genera un número de referencia basado en la fecha y hora actual
     final DateTime now = DateTime.now();
@@ -22,6 +23,8 @@ class PagoPage extends StatelessWidget {
       referencia: numeroReferencia,
       fecha: now,
       productos: List<Product>.from(productoService.carrito),
+      userId: perfilUsuario?['id'] ?? '',
+      estado: 'Pendiente',
     );
 
     // Agrega el pedido al servicio
@@ -115,6 +118,63 @@ class PagoPage extends StatelessWidget {
                       );
                     },
                   ),
+                  const SizedBox(height: 30),
+                  const Text(
+                    'Información del Usuario:',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 15),
+                  if (perfilUsuario != null &&
+                      perfilUsuario['direccion'] != null &&
+                      perfilUsuario['telefono'] != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Nombre: ${perfilUsuario['nombre']}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Correo Electrónico: ${perfilUsuario['email']}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Teléfono: ${perfilUsuario['telefono']}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Dirección: ${perfilUsuario['direccion']}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    )
+                  else
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Por favor, completa tu información de perfil antes de realizar la transferencia.',
+                          style: TextStyle(fontSize: 18, color: Colors.red),
+                        ),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, 'editarPerfil');
+                          },
+                          child: const Text(
+                            'Editar Perfil',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.indigo,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   const SizedBox(height: 30),
                   const Text(
                     'Por favor, realiza tu transferencia a la siguiente cuenta:',

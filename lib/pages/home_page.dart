@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
         onPressed: () {
           Navigator.pushNamed(context, 'carritoCompras');
         },
-        child: const Icon(Icons.shopping_cart),
+        child: const Icon(Icons.shopping_cart, color: Colors.white),
         backgroundColor: Colors.indigo,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

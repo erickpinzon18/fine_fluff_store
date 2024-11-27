@@ -9,6 +9,28 @@ class HistorialPedidosPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productoService = Provider.of<ProductoService>(context);
+    final perfilUsuario = productoService.perfilUsuario;
+    final userId = perfilUsuario?['id'];
+
+    if (userId == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Historial de Pedidos'),
+          backgroundColor: Colors.indigo,
+        ),
+        body: const Center(
+          child: Text(
+            'Error: No se pudo obtener el ID del usuario.',
+            style: TextStyle(fontSize: 18, color: Colors.red),
+          ),
+        ),
+      );
+    }
+
+    // Filtrar los pedidos para mostrar solo los del usuario actual
+    final pedidosUsuario = productoService.pedidos
+        .where((pedido) => pedido.userId == userId)
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -24,9 +46,9 @@ class HistorialPedidosPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: productoService.pedidos.length,
+                    itemCount: pedidosUsuario.length,
                     itemBuilder: (context, index) {
-                      final pedido = productoService.pedidos[index];
+                      final pedido = pedidosUsuario[index];
                       final total = pedido.productos.fold<double>(
                         0,
                         (total, producto) =>
@@ -53,12 +75,11 @@ class HistorialPedidosPage extends StatelessWidget {
                               const SizedBox(height: 10),
                               // Estado del pedido
                               Text(
-                                'Estado: Esperando Pago', // Puedes ajustar esto según el estado real del pedido
+                                'Estado: ${pedido.estado}',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: _getEstadoColor(
-                                      'Esperando Pago'), // Ajusta según el estado real
+                                  color: _getEstadoColor(pedido.estado),
                                 ),
                               ),
                               const SizedBox(height: 10),
@@ -94,8 +115,7 @@ class HistorialPedidosPage extends StatelessWidget {
                                 ),
                                 child: const Center(
                                   child: Padding(
-                                    padding: EdgeInsets.all(
-                                        1.0), // Puedes ajustar el valor del padding según sea necesario
+                                    padding: EdgeInsets.all(1.0),
                                     child: Text(
                                       'Ver detalles',
                                       style: TextStyle(
@@ -137,8 +157,9 @@ class HistorialPedidosPage extends StatelessWidget {
 
   // Método para obtener el color según el estado
   Color _getEstadoColor(String estado) {
+    print(estado);
     switch (estado) {
-      case 'Esperando Pago':
+      case 'Pendiente':
         return Colors.orange;
       case 'En Proceso':
         return Colors.blue;

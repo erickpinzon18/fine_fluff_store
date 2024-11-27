@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:products/services/producto_service.dart';
 
 class PerfilUsuarioPage extends StatelessWidget {
   const PerfilUsuarioPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Datos de ejemplo del usuario
-    final String nombreUsuario = "Juan Pérez";
-    final String emailUsuario = "juan.perez@example.com";
+    final productoService = Provider.of<ProductoService>(context);
+    final perfilUsuario = productoService.perfilUsuario;
+
+    final String nombreUsuario =
+        perfilUsuario?['nombre'] ?? 'Completar en editar perfil';
+    final String emailUsuario =
+        perfilUsuario?['email'] ?? 'Completar en editar perfil';
 
     return Scaffold(
       appBar: AppBar(

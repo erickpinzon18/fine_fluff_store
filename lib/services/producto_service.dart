@@ -10,6 +10,7 @@ class ProductoService extends ChangeNotifier {
   final List<Product> productos = [];
   final List<Product> carrito = [];
   final List<Pedido> pedidos = [];
+  Map<String, dynamic>? perfilUsuario;
 
   bool isLoading = true;
   Product? productoSeleccionado;
@@ -108,6 +109,21 @@ class ProductoService extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> actualizarEstadoPedido(String referencia, String estado) async {
+    final url = Uri.https(_baseUrl, 'pedidos/$referencia.json');
+    final resp = await http.patch(url, body: json.encode({'estado': estado}));
+
+    if (resp.statusCode != 200) {
+      print('Error al actualizar estado del pedido: ${resp.statusCode}');
+      return;
+    }
+
+    final pedido =
+        pedidos.firstWhere((pedido) => pedido.referencia == referencia);
+    pedido.estado = estado;
+    notifyListeners();
+  }
+
   void vaciarCarrito() {
     carrito.clear();
     notifyListeners();
@@ -116,5 +132,75 @@ class ProductoService extends ChangeNotifier {
   void vaciarHistorialPedidos() {
     pedidos.clear();
     notifyListeners();
+  }
+
+  Future<void> obtenerPerfilUsuario(String userId) async {
+    final url = Uri.https(_baseUrl, 'usuarios/$userId.json');
+    final resp = await http.get(url);
+
+    if (resp.statusCode != 200) {
+      print('Error al obtener perfil de usuario: ${resp.statusCode}');
+      return;
+    }
+
+    perfilUsuario = json.decode(resp.body);
+    perfilUsuario!['id'] = userId; // Mantener el userId en el perfil
+    notifyListeners();
+  }
+
+  Future<void> actualizarPerfilUsuario(
+      String userId, Map<String, dynamic> perfil) async {
+    // Mantener la contraseña actual
+    final currentPassword = perfilUsuario?['password'];
+    if (currentPassword != null) {
+      perfil['password'] = currentPassword;
+    }
+
+    final url = Uri.https(_baseUrl, 'usuarios/$userId.json');
+    final resp = await http.put(url, body: json.encode(perfil));
+
+    if (resp.statusCode != 200) {
+      print('Error al actualizar perfil de usuario: ${resp.statusCode}');
+      return;
+    }
+
+    perfilUsuario = perfil;
+    perfilUsuario!['id'] = userId; // Mantener el userId en el perfil
+    notifyListeners();
+  }
+
+  Future<bool> login(String email, String password) async {
+    final url = Uri.https(_baseUrl, 'usuarios.json');
+    final resp = await http.get(url);
+
+    if (resp.statusCode != 200) {
+      print('Error al obtener usuarios: ${resp.statusCode}');
+      return false;
+    }
+
+    final Map<String, dynamic> usuariosMap = json.decode(resp.body);
+    for (var usuario in usuariosMap.entries) {
+      if (usuario.value['email'] == email &&
+          usuario.value['password'] == password) {
+        perfilUsuario = usuario.value;
+        perfilUsuario!['id'] = usuario.key;
+        notifyListeners();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> register(String email, String password) async {
+    final url = Uri.https(_baseUrl, 'usuarios.json');
+    final resp = await http.post(url,
+        body: json.encode({'email': email, 'password': password}));
+
+    if (resp.statusCode != 200) {
+      print('Error al registrar usuario: ${resp.statusCode}');
+      return false;
+    }
+
+    return true;
   }
 }

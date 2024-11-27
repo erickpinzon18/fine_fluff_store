@@ -59,103 +59,115 @@ class _CarritoComprasPageState extends State<CarritoComprasPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Lista de productos en el carrito
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: productoService.carrito.length,
-                    itemBuilder: (context, index) {
-                      final producto = productoService.carrito[index];
-                      return Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Nombre del producto
-                              Text(
-                                producto.nombre,
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 10),
-
-                              // Precio
-                              Text(
-                                '\$${producto.precio}',
-                                style: const TextStyle(
-                                    fontSize: 18, color: Colors.green),
-                              ),
-                              const SizedBox(height: 10),
-
-                              // Color y talla
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: producto.color ?? Colors.black,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text('Talla: ${producto.talla ?? 'N/A'}'),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-
-                              // Cantidad
-                              Row(
-                                children: [
-                                  const Text('Cantidad: '),
-                                  Text('${producto.cantidad ?? 1}'),
-                                  IconButton(
-                                    icon: const Icon(Icons.add),
-                                    onPressed: () => _incrementQuantity(index),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.remove),
-                                    onPressed: () => _decrementQuantity(index),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete),
-                                    onPressed: () => _removeProduct(index),
-                                    color: Colors.red,
-                                  ),
-                                ],
-                              ),
-                            ],
+                  // Verificar si el carrito está vacío
+                  if (productoService.carrito.isEmpty)
+                    const Center(
+                      child: Text(
+                        'El carrito de compras está vacío',
+                        style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: productoService.carrito.length,
+                      itemBuilder: (context, index) {
+                        final producto = productoService.carrito[index];
+                        return Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Nombre del producto
+                                Text(
+                                  producto.nombre,
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Precio
+                                Text(
+                                  '\$${producto.precio}',
+                                  style: const TextStyle(
+                                      fontSize: 18, color: Colors.green),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Color y talla
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: producto.color ?? Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text('Talla: ${producto.talla ?? 'N/A'}'),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Cantidad
+                                Row(
+                                  children: [
+                                    const Text('Cantidad: '),
+                                    Text('${producto.cantidad ?? 1}'),
+                                    IconButton(
+                                      icon: const Icon(Icons.add),
+                                      onPressed: () =>
+                                          _incrementQuantity(index),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.remove),
+                                      onPressed: () =>
+                                          _decrementQuantity(index),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () => _removeProduct(index),
+                                      color: Colors.red,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
 
                   const SizedBox(height: 20),
 
                   // Botón para proceder al pago
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'pago');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.indigo,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                      ),
-                      child: const Text(
-                        'Proceder al Pago',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                  if (productoService.carrito.isNotEmpty)
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'pago');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
+                        ),
+                        child: const Text(
+                          'Proceder al Pago',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

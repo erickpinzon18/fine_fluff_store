@@ -30,6 +30,11 @@ class DetallesPedidoPage extends StatelessWidget {
                   style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 10),
+                Text(
+                  'Estado: ${pedido.estado}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 10),
                 const Text(
                   'Productos:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -78,6 +83,18 @@ class DetallesPedidoPage extends StatelessWidget {
                         ),
                       ),
                     )),
+                const SizedBox(height: 20),
+                const Text(
+                  'Información del Usuario:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'ID de Usuario: ${pedido.userId}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 10),
+                // Aquí puedes agregar más información del usuario si está disponible
               ],
             ),
           ),
